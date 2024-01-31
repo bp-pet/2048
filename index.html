@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html>
+
+
+<head>
+	<title>2048</title>
+    <link rel="stylesheet" type="text/css" href="front.css">
+</head>
+
+<body>
+
+<div id="landing-screen" class="big-window">
+    <span id="title">2048</span><br>
+    <label for="board-size">Select board size:</label><br>
+    <input class="size-input" id="board-x" type="number" value="4" min="1", max="10"></input>
+    <input class="size-input" id="board-y" type="number" value="4" min="1", max="10"></input>
+    <br><button id="start-button">Start</button>
+</div>
+      
+
+<div id="game-container" class="big-window">
+    <div id="game-board">
+    </div>
+
+    <div id="hud-container">
+        <div id="score-container">
+            <span id="score-label">Score </span><br>
+            <span id="score">0</span>
+            <span id="high-score-label">High score</span>
+            <span id="high-score">0</span>
+        </div>
+
+        <div id="switch-container">
+            <b>Fast mode</b><br>   
+            <label class="switch">
+                <input type="checkbox" id="fastModeSwitch">
+                <span class="slider"></span>
+            </label>
+            <br>press <b>f</b> to toggle
+            <div class="popup">Fast mode means some animations are omitted<br>and some are faster, allowing for faster play.
+            </div>
+        </div>
+        <button id="back-to-menu-button1" class="back-to-menu-button">Back to menu</button>
+    </div>
+</div>
+
+<div id="game-over-screen">
+    <span class="game-over-text">Game over!<br>Score:</span>
+    <span id="game-over-score">0</span><br>
+    <button id="back-to-menu-button2" class="back-to-menu-button">Back to menu</button>
+</div>
+
+<div id="victory-screen">
+    <h2>Congratulations!</h1>   
+    <h6>You may continue playing to get a high score.</h6>
+</div>
+
+      
+<script src="front.js" type="text/javascript"></script>
+
+</body>
+</html>

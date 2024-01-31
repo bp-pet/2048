@@ -1,0 +1,314 @@
+:root {
+    --primary-board-color: #a48e7a;
+    --secondary-board-color: #ccc0b4;
+    --tile-primary-color: #b07844;
+    --tile-secondary-color: rgb(66, 23, 3);
+    --border-size: 10px;
+}
+
+body {
+    font-family: sans-serif; /* change font to Arial or sans-serif */
+    background-color: rgb(232, 222, 201);
+}
+
+#game-board {
+    display: grid;
+    grid-template-columns: repeat(var(--board-y), var(--cell-size));
+    grid-template-rows: repeat(var(--board-x), var(--cell-size));
+    width: calc(var(--board-size) * var(--cell-size) + (var(--board-size) - 1) * var(--gap-size));
+    background-color: var(--primary-board-color);
+    border-radius: 10px;
+    box-shadow: 0px 10px 20px rgba(0, 0, 0, 0.4);
+    padding: 10px;
+    grid-gap: 10px;
+    height: fit-content;
+}
+  
+.cell {
+    border: 10px solid var(--secondary-board-color);
+    background-color: var(--secondary-board-color);
+    border-radius: 5px;
+}
+
+.tile {
+    display: flex;
+    background-color: var(--tile-primary-color);
+    width: calc(var(--cell-size) - 2 * var(--border-size));
+    height: calc(var(--cell-size) - 2 * var(--border-size));
+    border: 10px solid var(--tile-primary-color);
+    border-radius: 5px;
+    font-size: calc(0.8 * var(--cell-size));
+    text-align: center; /* center the text horizontally */
+    align-items: center;
+    justify-content: center;
+    color: var(--tile-secondary-color);
+    box-sizing: border-box;
+    transition: transform linear;
+    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.2);
+}
+
+@keyframes appearAnimation {
+    from {
+      opacity: 0.8; /* Start with opacity 0 (invisible) */
+      transform: scale(0.2); /* Start with a smaller size */
+    }
+    to {
+      opacity: 1; /* End with opacity 1 (fully visible) */
+      transform: scale(1); /* End with original size */
+    }
+}
+
+@keyframes mergeAnimation {
+    from {
+      opacity: 1; /* Start with opacity 0 (invisible) */
+      transform: scale(1.2); /* Start with a smaller size */
+    }
+    to {
+      opacity: 1; /* End with opacity 1 (fully visible) */
+      transform: scale(1); /* End with original size */
+    }
+}
+
+.tile-merge {
+    animation-name: mergeAnimation;
+    animation-duration: 200ms; /* Adjust the duration as needed */
+    animation-fill-mode: forwards; /* Keep the final state after animation */
+
+}
+
+.tile-appear {
+    animation-name: appearAnimation;
+    animation-duration: 100ms; /* Adjust the duration as needed */
+    animation-fill-mode: forwards; /* Keep the final state after animation */
+}
+
+#score-container {
+    height: 250px;
+    width: 400px;
+    display: flex;
+    align-items: flex-start;
+    background-color: rgba(0, 0, 0, 0);
+    flex-direction: column;
+    padding: 20px;
+    padding-right: 200px;
+    height: fit-content;
+    width: fit-content;
+}
+
+#score-label {
+    font-size: 80px;
+    font-weight: bold;
+    color: red;
+    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.2);
+}
+
+#high-score-label {
+    font-size: 30px;
+    font-weight: bold;
+    color: red;
+    margin-top: 20px;
+    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.2);
+}
+
+#score {
+    font-size: 80px;
+}
+
+#high-score {
+    font-size: 30px;
+}
+
+#game-container {
+    display: none;
+}
+
+.big-window {
+    background-color: rgb(236, 205, 139);
+    width: fit-content;
+    height: fit-content;
+    border-radius: 10px;
+    border: 5px solid rgb(61, 61, 61);
+    padding: 30px;
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+}
+
+#game-over-screen {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    height: fit-content;
+    width: fit-content;
+    transform: translate(-50%, -50%);
+    background-color: rgba(50, 42, 42, 0.98);
+    color: #df9b06;
+    padding: 20px;
+    text-align: center;
+    align-items: center;
+    vertical-align: center;
+    justify-content: center;
+    font-size: 80px;
+    display: none; /* Initially hidden */
+    box-shadow: 0px 10px 20px rgba(0, 0, 0, 0.4);
+    border-radius: 10px;
+}
+
+#victory-screen {
+    position: absolute;
+    height: fit-content;
+    width: fit-content;
+    transform: translate(-50%, -50%);
+    background-color: rgba(98, 112, 86, 0.98);
+    color: #000000;
+    padding: 10px;
+    text-align: center;
+    align-items: center;
+    vertical-align: center;
+    justify-content: center;
+    font-size: 40px;
+    top: 50%;
+    left: 50%;
+    padding: 20px;
+    display: none;
+    padding-top: 30px;
+    box-shadow: 0px 10px 20px rgba(0, 0, 0, 0.4);
+    border-radius: 30px;
+    opacity: 1;
+}
+
+#victory-screen.fade-out {
+    opacity: 0;
+    transition: opacity 2s ease;
+}
+
+#hud-container {
+    background-color: rgba(0, 0, 0, 0);
+    height: fit-content;
+    width: fit-content;
+    padding-left: 50px;
+}
+
+#switch-container {
+    display: inline-block;
+    padding: 10px;
+    background-color: rgba(0, 0, 0, 0);
+    height: fit-content;
+    width: fit-content;
+}
+
+.switch {
+    margin: 5px;
+    position: relative;
+    display: inline-block;
+    width: 60px;
+    height: 34px;
+    border: 2px solid rgb(103, 103, 103);
+}
+
+.switch input {
+    opacity: 0;
+    width: 0;
+    height: 0;
+}
+
+.slider {
+    position: absolute;
+    cursor: pointer;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: #ccc;
+    -webkit-transition: .4s;
+    transition: .4s;
+}
+  
+.slider:before {
+    position: absolute;
+    content: "";
+    height: 26px;
+    width: 26px;
+    left: 4px;
+    bottom: 4px;
+    background-color: white;
+    -webkit-transition: .4s;
+    transition: .4s;
+}
+
+input:checked + .slider {
+    background-color: #2196F3;
+}
+  
+input:focus + .slider {
+    box-shadow: 0 0 1px #2196F3;
+}
+  
+input:checked + .slider:before {
+    -webkit-transform: translateX(26px);
+    -ms-transform: translateX(26px);
+    transform: translateX(26px);
+}
+
+.popup {
+    position: absolute;
+    display: none;
+    background-color: #f9f9f9;
+    opacity: 0.8;
+    color: #000;
+    padding: 10px;
+    border-radius: 5px;
+    box-shadow: 0 0 5px rgba(0, 0, 0, 0.3);
+}
+  
+.switch:hover .popup {
+    display: block;
+}
+
+#landing-screen {
+    padding: 20px;
+}
+
+#title {
+    font-size: 80px;
+}
+
+label {
+    font-size: 32px;
+}
+
+select {
+    font-size: 32px;
+}
+
+button {
+    font-size: 32px;
+    margin-top: 20px;
+}
+
+.size-input {
+    margin-top: 20px;
+    font-size: 20px;
+    width: 50px;
+}
+
+button {
+    display: inline-block;
+    padding: 10px 20px;
+    background-color: #e59a3f;
+    color: black;
+    border: 1px solid black;
+    border-radius: 4px;
+    cursor: pointer;
+}
+
+.back-to-menu-button {
+    font-size: 20px;
+}
+
+#back-to-menu-button1 {
+    position: relative;
+    top: -30px; /* Adjust the top position as needed */
+    left: 60px; /* Adjust the left position as needed */
+}
