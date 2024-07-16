@@ -3,7 +3,7 @@
 // TODO score change animation
 // TODO fix gameplay with 1 or 2 tiles
 
-// contants
+// constants
 const cellSize = 100;
 const gapSize = 10;
 const fourSpawnRate = 0.1;
@@ -163,6 +163,8 @@ document.addEventListener('keydown', function(event) {
         return;
     }
 
+    console.log(event)
+
     processing = true;
 
     let direction;
@@ -202,6 +204,57 @@ document.addEventListener('keydown', function(event) {
             processing = false
         });
 });
+
+
+
+
+// handle touches on mobile
+let touchStartX = 0;
+let touchStartY = 0;
+let touchEndX = 0;
+let touchEndY = 0;
+
+function handleSwipe() {
+    const diffX = touchEndX - touchStartX;
+    const diffY = touchEndY - touchStartY;
+
+    if (Math.abs(diffX) > Math.abs(diffY)) {
+        if (diffX > 0) {
+            key = 'ArrowRight';
+        } else {
+            key = 'ArrowLeft';
+        }
+    } else {
+        if (diffY > 0) {
+            key = 'ArrowDown';
+        } else {
+            key = 'ArrowUp';
+        }
+    }
+
+    const event = new KeyboardEvent('keydown', {
+        key: key,
+        code: key,
+        bubbles: true,
+        cancelable: true
+    });
+    document.dispatchEvent(event);
+
+}
+
+document.addEventListener('touchstart', function(event) {
+    touchStartX = event.changedTouches[0].screenX;
+    touchStartY = event.changedTouches[0].screenY;
+}, false);
+
+document.addEventListener('touchend', function(event) {
+    touchEndX = event.changedTouches[0].screenX;
+    touchEndY = event.changedTouches[0].screenY;
+    handleSwipe();
+}, false);
+
+
+
 
 function spawnRandomTile() {
     // spawn a tile at a random location
