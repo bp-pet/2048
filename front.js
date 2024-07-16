@@ -163,8 +163,6 @@ document.addEventListener('keydown', function(event) {
         return;
     }
 
-    console.log(event)
-
     processing = true;
 
     let direction;
