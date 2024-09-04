@@ -1,7 +1,14 @@
+// 2048 game implementation
+// Author: bp-pet
+// A note on nomenclature: the game is played on a board with cells, each cell can contain a tile or not
+
 // TODO deployment
 // TODO undo button
 // TODO score change animation
 // TODO fix gameplay with 1 or 2 tiles
+
+
+
 
 // constants
 const cellSize = 100;
@@ -43,6 +50,9 @@ const gameOverScreen = document.getElementById('game-over-screen');
 const gameOverScore = document.getElementById("game-over-score");
 const victoryScreen = document.getElementById('victory-screen');
 
+// set cell sizes
+document.documentElement.style.setProperty('--cell-size', `${cellSize}px`);
+document.documentElement.style.setProperty("--gap-size", `${gapSize}px`);
 
 document.addEventListener('DOMContentLoaded', function() {
     // wait for user to start game
@@ -74,17 +84,22 @@ function setSizes() {
 
 
 function startGame() {
-    // load board and spawn start cells, turn on keyboard input
+
+    // load board and score
     score = 0;
     addScore(0);
     gameContainer.style.setProperty("display", "flex");
     landingScreen.style.setProperty("display", "none");
     const board = document.getElementById("game-board");
+
+    // remove existing cells
     let cells = document.querySelectorAll(".cell");
     for (let i = 0; i < cells.length; i++) {
         let cell = cells[i];
         cell.remove();
     }
+
+    // spawn new cells
     for (let row = 0; row < boardX; row++) {
         for (let col = 0; col < boardY; col++) {
             const cell = document.createElement("div");
@@ -96,12 +111,13 @@ function startGame() {
         }
     }
     
+    // spawn two random tiles to start off
     Promise.all([spawnRandomTile(), spawnRandomTile()]).then(() => {
         processing = false;
     });
 }
 
-// switch definitions
+// fast mode switch definitions
 toggleFastMode(fastMode);
 const switchElement = document.getElementById("fastModeSwitch");
 switchElement.checked = fastMode;
@@ -131,13 +147,7 @@ switchElement.addEventListener("click", function() {
     toggleFastMode(this.checked);
 });
 
-document.documentElement.style.setProperty('--cell-size', `${cellSize}px`);
-document.documentElement.style.setProperty("--gap-size", `${gapSize}px`);
-
-
-
-
-// add custom tiles (for debugging)
+// optional: add custom tiles for debugging or leave empty for random tiles
 let cellsToAdd = [];
 // let cellsToAdd = [[0, 0, 1024], [0, 1, 1024]];
 // let cellsToAdd = [[0, 0, 2], [0, 1, 4], [0, 2, 8], [0, 3, 16],
@@ -159,12 +169,16 @@ for (let i = 0; i < cellsToAdd.length; i++) {
 
 document.addEventListener('keydown', function(event) {
     // main part of game
+
     if (processing) {
+        // if a move is being processed, ignore the keypress
         return;
     }
 
+    // indicates move is being processed
     processing = true;
 
+    // determine direction or other action from key
     let direction;
     if (event.code === 'ArrowRight' || event.code === 'KeyD') {
         direction = "right";
@@ -178,19 +192,23 @@ document.addEventListener('keydown', function(event) {
         switchElement.checked = 1 - switchElement.checked;
         toggleFastMode(switchElement.checked);
         processing = false;
-        // mute the return for nice hacks
+        // if you mute the return you can spawn new tiles without moving the board
         return;
     } else {
         processing = false;
         return;
     }
+
+    // move all tiles in the given direction
     moveAll(direction)
         .then(changed => {
             if (changed) {
+                // if keypress resulted in a move, spawn a new tile
                 return spawnRandomTile()
             }
         })
         .then(() => {
+            // check if there are any moves left to end the game or not
             return checkForMoves();
         })
         .then(moveIsPossible => {
@@ -230,6 +248,7 @@ function handleSwipe() {
         }
     }
 
+    // simulate keypress based on swipe
     const event = new KeyboardEvent('keydown', {
         key: key,
         code: key,
@@ -262,22 +281,30 @@ function spawnRandomTile() {
             // if nothing to spawn
             resolve();
         }
+
+        // find all empty cells
         let emptyCells = [];
         for (let i = 0; i < cells.length; i++) {
             if (cells[i].childElementCount === 0) {
             emptyCells.push(cells[i]);
             }
         }
+
+        // determine at random where to spawn
         let spawnCell = emptyCells[Math.floor(Math.random() * emptyCells.length)];
     
+        // determine if 2 or 4 should spawn with a set rate
         let spawnNumber = 2;
         if (Math.random() < fourSpawnRate) {
             spawnNumber = 4;
         }
     
+        // create tile
         let tile = document.createElement("div");
         tile.classList.add("tile");
         tile.classList.add('tile-appear');
+
+        // play appear animation
         let tilePromise = new Promise((resolveTile) => {
             setTimeout(() => {
             tile.classList.remove('tile-appear');
@@ -285,6 +312,7 @@ function spawnRandomTile() {
             }, appearTime);
         });
     
+        // actually spawn tile
         let updatePromise = new Promise((resolveUpdate) => {
             tile.setAttribute("row", spawnCell.getAttribute("row"));
             tile.setAttribute("col", spawnCell.getAttribute("col"));
@@ -303,22 +331,30 @@ function spawnRandomTile() {
 
 async function checkForMoves() {
     // check if move is possible
-    let promises = [];
     let moveExists = false;
+    
+    // make a promise for each cell
+    let promises = [];
     for (let i = 0; i < boardX; i++) {
         for (let j = 0; j < boardY; j++) {
             let promise = new Promise(resolve => {
                 if (document.getElementById(`cell-${i}-${j}`).childNodes.length === 0) {
+                    // if board is not full then move definitely exists
                     moveExists = true;
                     resolve();
                 }
+
+                // check if there is a tile with the same value in the adjacent cell
                 if (i !== boardX - 1) {
                     if (document.getElementById(`cell-${i + 1}-${j}`).childNodes.length === 0) {
+                        // this statement is here so that the next one does not throw an error in case the adjacent cell is empty
                         moveExists = true;
                     } else if (document.getElementById(`cell-${i}-${j}`).childNodes[0].textContent === document.getElementById(`cell-${i + 1}-${j}`).childNodes[0].textContent) {
                         moveExists = true;
                     }
                 }
+
+                // do the same check on the other axis
                 if (j !== boardY - 1) {
                     if (document.getElementById(`cell-${i}-${j + 1}`).childNodes.length === 0) {
                         moveExists = true;
@@ -335,7 +371,7 @@ async function checkForMoves() {
 }
 
 function findTiles(direction, x, tiles) {
-    // find all tiles in column from top to bottom
+    // find all tiles in row or column
     return new Promise((resolve) => {
         let axis;
         if (direction === "up" || direction === "down") {
@@ -374,13 +410,16 @@ function findTiles(direction, x, tiles) {
 }
 
 function mergeTiles(direction, x, tiles, idxToRemove) {
-    // find out which to merge, set ones that are merged up for deleting
+    // find out which to merge in a given row or column as result of a move in a given direction
+    // also set ones that are merged up for deleting
     return new Promise((resolve) => {
         for (let i = 0; i < tiles.length; i++) {
-            // if current one already merged with previous, it cannot be merged with next
+            // if current one already merged with previous (i.e. it is set up for removing), it cannot be merged with next
             if (idxToRemove.includes(i)) {
                 continue;
             }
+            
+            // determine the location to move to
             switch(direction) {
                 case 'up':
                     targetRow = i - idxToRemove.length;
@@ -400,16 +439,16 @@ function mergeTiles(direction, x, tiles, idxToRemove) {
                     break;
                 default:
             }
-            // target location of current one is independent of merges
+            // target location of current tile is the same regardless of merging or not
             tiles[i].setAttribute("targetRow", targetRow);
             tiles[i].setAttribute("targetCol", targetCol);
 
-            // for last one do not check for merges
+            // for last one do not check for merges (since there is no next tile)
             if (i === tiles.length - 1) {
                 break;
             }
 
-            // check for merges
+            // check if current should be merged with next based on number
             if (tiles[i].textContent === tiles[i + 1].textContent) {
                 tiles[i + 1].setAttribute("targetRow", targetRow);
                 tiles[i + 1].setAttribute("targetCol", targetCol);
@@ -421,10 +460,10 @@ function mergeTiles(direction, x, tiles, idxToRemove) {
 }
 
 function updateColumn(direction, x, tiles, idxToRemove) {
-    // based on merging of tiles, update a column
+    // based on merging of tiles, update a row/column
     return new Promise((resolve) => {
 
-        // clear column
+        // clear row/column
         let axis;
         if (direction === "up" || direction === "down") {
             axis = boardX;
@@ -481,7 +520,7 @@ function updateColumn(direction, x, tiles, idxToRemove) {
         }
 
         let columnsPromise = new Promise((columnsResolve) => {
-            // add remaining tiles to column
+            // add remaining tiles to row/column
             for (let i = 0; i < tiles.length; i++) {
                 switch(direction) {
                     case 'up':
@@ -514,6 +553,7 @@ function updateColumn(direction, x, tiles, idxToRemove) {
 
 function playAnimations(tiles) {
     // return promise which is resolved when all animations are complete
+    // returns false if nothing happened, true otherwise
     return new Promise((resolve) => {
 
         if (tiles.length === 0) {
@@ -558,7 +598,7 @@ function playAnimation(tile, onAnimationComplete) {
     let XshiftSizePixels = cellSize * XshiftSizeCells + gapSize * XshiftSizeCells;
     let translationX = `translateX(${XshiftSizePixels}px)`;
 
-    // speed calculation
+    // calculate speed
     const distance = Math.max(Math.abs(XshiftSizePixels), Math.abs(YshiftSizePixels));
     const duration = (distance / movementSpeed) * 1000;
 
