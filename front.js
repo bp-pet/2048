@@ -741,11 +741,10 @@ function sendHighScore() {
         },
         body: JSON.stringify({ name: nameInput, points: score, board_x: boardX, board_y: boardY })
     })
-        .then(response => {
-            console.log('Success:', response);
+        .then(() => {
         })
         .catch(error => {
-            console.error('Error:', error);
+            console.error('Error posting score:', error);
         });
 }
 
@@ -753,7 +752,6 @@ function getHighScores() {
     target_url = server_url + '/' + boardX + '/' + boardY;
     fetch(target_url, {method: 'GET'})
         .then(response => {
-            console.log(response);
             return response.json();
         })
         .then(data => {
@@ -792,6 +790,6 @@ function getHighScores() {
             }
         })
         .catch(error => {
-            console.log('Error:', error);
+            console.log('Error getting scores:', error);
         });
 }
