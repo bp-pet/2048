@@ -23,11 +23,16 @@
         </div>
 
         <div id="hud-container">
-            <div id="score-container">
+
+            <div id="current-score-container">
                 <span id="score-label">Score </span><br>
                 <span id="score">0</span>
-                <span id="high-score-label">High score</span>
-                <span id="high-score">0</span>
+            </div>
+
+            <div id="high-scores-container">
+                <span id="high-scores-label">High scores</span><br>
+                <table id="high-scores-table">
+                </table>
             </div>
 
             <div id="switch-container">
@@ -41,21 +46,22 @@
                     faster play.
                 </div>
             </div>
-            <button id="back-to-menu-button1" class="back-to-menu-button">Back to menu</button>
+
+            <button id="back-to-menu-button-in-game" class="back-to-menu-button">Back to menu</button>
         </div>
     </div>
 
     <div id="game-over-screen">
         <span class="game-over-text">Game over!<br>Score:</span>
         <span id="game-over-score">0</span><br>
-        <button id="back-to-menu-button2" class="back-to-menu-button">Back to menu</button>
+        <input type="text" id="name-input" placeholder="Enter name">
+        <button id="back-to-menu-button-game-over" class="back-to-menu-button">Submit</button>
     </div>
 
     <div id="victory-screen">
         <h2>Congratulations!</h1>
             <h6>You may continue playing to get a high score.</h6>
     </div>
-
 
     <script src="front.js" type="text/javascript"></script>
 

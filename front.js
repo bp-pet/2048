@@ -2,15 +2,16 @@
 // Author: bp-pet
 // A note on nomenclature: the game is played on a board with cells, each cell can contain a tile or not
 
-// TODO deployment
-// TODO undo button
-// TODO score change animation
-// TODO fix gameplay with 1 or 2 tiles
+// Possible features to add:
+// undo button
+// score change animation
 
 
-
+// backend
+const server_url = 'https://bp1402.pythonanywhere.com';
 
 // constants
+numberOfScoresShown = 5;
 const cellSize = 100;
 const gapSize = 10;
 const fourSpawnRate = 0.1;
@@ -38,14 +39,13 @@ let movementSpeed;
 let processing = true;
 let fastMode = false;
 let score = 0;
-let highScores = {};
+let nameInput = '';
 
 // elements
 const gameContainer = document.getElementById("game-container");
 const landingScreen = document.getElementById("landing-screen");
 const startButton = document.getElementById('start-button');
-const backToMenuButtons = [document.getElementById('back-to-menu-button1'),
-                           document.getElementById('back-to-menu-button2')];
+const backToMenuButtons = [document.getElementById('back-to-menu-button-in-game'), document.getElementById('back-to-menu-button-game-over')];
 const gameOverScreen = document.getElementById('game-over-screen');
 const gameOverScore = document.getElementById("game-over-score");
 const victoryScreen = document.getElementById('victory-screen');
@@ -69,6 +69,10 @@ for (let i = 0; i < backToMenuButtons.length; i++) {
         gameContainer.style.setProperty("display", "none");
         landingScreen.style.setProperty("display", "block");
         gameOverScreen.style.setProperty("display", "none");
+        if (i == 1) {
+            // only record score on game over
+            sendHighScore();
+        }
     });
 }
 
@@ -91,6 +95,7 @@ function startGame() {
     gameContainer.style.setProperty("display", "flex");
     landingScreen.style.setProperty("display", "none");
     const board = document.getElementById("game-board");
+    getHighScores();
 
     // remove existing cells
     let cells = document.querySelectorAll(".cell");
@@ -168,7 +173,12 @@ for (let i = 0; i < cellsToAdd.length; i++) {
 
 
 document.addEventListener('keydown', function(event) {
-    // main part of game
+    
+    if (event.code === 'KeyP') {
+        // for debugging
+        doGameOver();
+        return;
+    }
 
     if (processing) {
         // if a move is being processed, ignore the keypress
@@ -703,16 +713,7 @@ function addScore(points) {
         showVictoryScreen();
     }
     score += points;
-
-    if (!([boardX, boardY] in highScores)) {
-        highScores[[boardX, boardY]] = 0;
-    }
-
-    if (score > highScores[`${boardX},${boardY}`]) {
-        highScores[[boardX, boardY]] = score;
-    }
     document.getElementById("score").textContent = score;
-    document.getElementById("high-score").textContent = highScores[`${boardX},${boardY}`];
 }
 
 function showVictoryScreen() {
@@ -727,4 +728,70 @@ function doGameOver() {
     // show game over screen and restart game
     gameOverScore.textContent = score;
     gameOverScreen.style.display = 'block';
+}
+
+
+
+function sendHighScore() {
+    nameInput = document.getElementById('name-input').value;
+    fetch(server_url, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ name: nameInput, points: score, board_x: boardX, board_y: boardY })
+    })
+        .then(response => {
+            console.log('Success:', response);
+        })
+        .catch(error => {
+            console.error('Error:', error);
+        });
+}
+
+function getHighScores() {
+    target_url = server_url + '/' + boardX + '/' + boardY;
+    fetch(target_url, {method: 'GET'})
+        .then(response => {
+            console.log(response);
+            return response.json();
+        })
+        .then(data => {
+            let scores = data.scores;
+
+            // get high scores table element
+            const highScoresTable = document.getElementById("high-scores-table");
+
+            // clear existing rows
+            while (highScoresTable.rows.length > 0) {
+                highScoresTable.deleteRow(0);
+            }
+
+            // if no scores just show placeholder
+            if (scores.length === 0) {
+                const row = highScoresTable.insertRow(0);
+                const cell = row.insertCell(0);
+                cell.textContent = "-";
+                return;
+            }
+
+            // add new rows
+            for (let i = 0; i < scores.length; i++) {
+                if (i === numberOfScoresShown) {
+                    // only show top few
+                    break;
+                }
+                const row = highScoresTable.insertRow(i);
+                const rankCell = row.insertCell(0);
+                const nameCell = row.insertCell(1);
+                const scoreCell = row.insertCell(2);
+
+                rankCell.textContent = (i + 1) + ".";
+                nameCell.textContent = scores[i].name;
+                scoreCell.textContent = scores[i].points;
+            }
+        })
+        .catch(error => {
+            console.log('Error:', error);
+        });
 }

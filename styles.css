@@ -1,17 +1,54 @@
+/* Set variables */
+
 :root {
     --primary-board-color: #a48e7a;
     --secondary-board-color: #ccc0b4;
     --tile-primary-color: #b07844;
     --tile-secondary-color: rgb(66, 23, 3);
-    --border-size: 10px;
+    --cell-padding: 10px;
 }
 
+
+
+
+
+/* General styling */
+
 body {
-    font-family: sans-serif; /* change font to Arial or sans-serif */
+    font-family: sans-serif;
     background-color: rgb(232, 222, 201);
 }
 
+
+
+
+
+
+/* Main window styling */
+
+.big-window {
+    background-color: rgb(236, 205, 139);
+    width: fit-content;
+    height: fit-content;
+    border-radius: 10px;
+    border: 5px solid rgb(61, 61, 61);
+    padding: 30px;
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+}
+
+
+
+/* Game board and contents */
+
+#game-container {
+    display: none; /* Initially hidden */
+}
+
 #game-board {
+    /* Dynamic grid based on the board size */
     display: grid;
     grid-template-columns: repeat(var(--board-y), var(--cell-size));
     grid-template-rows: repeat(var(--board-x), var(--cell-size));
@@ -22,6 +59,7 @@ body {
     padding: 10px;
     grid-gap: 10px;
     height: fit-content;
+    width: fit-content;
 }
   
 .cell {
@@ -33,8 +71,8 @@ body {
 .tile {
     display: flex;
     background-color: var(--tile-primary-color);
-    width: calc(var(--cell-size) - 2 * var(--border-size));
-    height: calc(var(--cell-size) - 2 * var(--border-size));
+    width: calc(var(--cell-size) - 2 * var(--cell-padding));
+    height: calc(var(--cell-size) - 2 * var(--cell-padding));
     border: 10px solid var(--tile-primary-color);
     border-radius: 5px;
     font-size: calc(0.8 * var(--cell-size));
@@ -46,6 +84,15 @@ body {
     transition: transform linear;
     text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.2);
 }
+
+
+
+
+
+
+
+
+/* Animations */
 
 @keyframes appearAnimation {
     from {
@@ -82,15 +129,29 @@ body {
     animation-fill-mode: forwards; /* Keep the final state after animation */
 }
 
-#score-container {
-    height: 250px;
-    width: 400px;
+
+
+
+
+
+
+/* Extra info on game screen */
+
+#hud-container {
+    display: grid;
+    grid-template-columns: auto auto;
+    height: fit-content;
+    width: fit-content;
+    padding-left: 50px;
+}
+
+#current-score-container {
     display: flex;
     align-items: flex-start;
     background-color: rgba(0, 0, 0, 0);
     flex-direction: column;
-    padding: 20px;
-    padding-right: 200px;
+    padding-right: 50px;
+    padding-bottom: 50px;
     height: fit-content;
     width: fit-content;
 }
@@ -102,97 +163,30 @@ body {
     text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.2);
 }
 
-#high-score-label {
-    font-size: 30px;
-    font-weight: bold;
-    color: red;
-    margin-top: 20px;
-    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.2);
-}
-
 #score {
     font-size: 80px;
 }
 
-#high-score {
-    font-size: 30px;
+.back-to-menu-button {
+    font-size: 20px;
 }
 
-#game-container {
-    display: none;
-}
-
-.big-window {
-    background-color: rgb(236, 205, 139);
-    width: fit-content;
-    height: fit-content;
-    border-radius: 10px;
-    border: 5px solid rgb(61, 61, 61);
-    padding: 30px;
-    position: fixed;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-}
-
-#game-over-screen {
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    height: fit-content;
-    width: fit-content;
-    transform: translate(-50%, -50%);
-    background-color: rgba(50, 42, 42, 0.98);
-    color: #df9b06;
+#high-scores-container {
+    color:black;
+    font-size: 20px;
     padding: 20px;
-    text-align: center;
-    align-items: center;
-    vertical-align: center;
-    justify-content: center;
-    font-size: 80px;
-    display: none; /* Initially hidden */
-    box-shadow: 0px 10px 20px rgba(0, 0, 0, 0.4);
-    border-radius: 10px;
 }
 
-#victory-screen {
-    position: absolute;
-    height: fit-content;
-    width: fit-content;
-    transform: translate(-50%, -50%);
-    background-color: rgba(98, 112, 86, 0.98);
-    color: #000000;
-    padding: 10px;
-    text-align: center;
-    align-items: center;
-    vertical-align: center;
-    justify-content: center;
-    font-size: 40px;
-    top: 50%;
-    left: 50%;
-    padding: 20px;
-    display: none;
-    padding-top: 30px;
-    box-shadow: 0px 10px 20px rgba(0, 0, 0, 0.4);
-    border-radius: 30px;
-    opacity: 1;
-}
 
-#victory-screen.fade-out {
-    opacity: 0;
-    transition: opacity 2s ease;
-}
 
-#hud-container {
-    background-color: rgba(0, 0, 0, 0);
-    height: fit-content;
-    width: fit-content;
-    padding-left: 50px;
-}
+
+
+
+
+
+/* Switch styling and animations */
 
 #switch-container {
-    display: inline-block;
-    padding: 10px;
     background-color: rgba(0, 0, 0, 0);
     height: fit-content;
     width: fit-content;
@@ -266,9 +260,14 @@ input:checked + .slider:before {
     display: block;
 }
 
-#landing-screen {
-    padding: 20px;
-}
+
+
+
+
+
+
+
+/* Other elements */
 
 #title {
     font-size: 80px;
@@ -303,12 +302,61 @@ button {
     cursor: pointer;
 }
 
-.back-to-menu-button {
-    font-size: 20px;
+
+
+
+
+
+/* Extra screens */
+
+#landing-screen {
+    padding: 20px;
 }
 
-#back-to-menu-button1 {
-    position: relative;
-    top: -30px; /* Adjust the top position as needed */
-    left: 60px; /* Adjust the left position as needed */
+#game-over-screen {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    height: fit-content;
+    width: fit-content;
+    transform: translate(-50%, -50%);
+    background-color: rgba(50, 42, 42, 0.98);
+    color: #df9b06;
+    padding: 20px;
+    text-align: center;
+    align-items: center;
+    vertical-align: center;
+    justify-content: center;
+    font-size: 80px;
+    display: none; /* Initially hidden */
+    box-shadow: 0px 10px 20px rgba(0, 0, 0, 0.4);
+    border-radius: 10px;
+}
+
+#victory-screen {
+    position: absolute;
+    height: fit-content;
+    width: fit-content;
+    transform: translate(-50%, -50%);
+    background-color: rgba(98, 112, 86, 0.98);
+    color: #000000;
+    padding: 10px;
+    text-align: center;
+    align-items: center;
+    vertical-align: center;
+    justify-content: center;
+    font-size: 40px;
+    top: 50%;
+    left: 50%;
+    padding: 20px;
+    display: none;
+    padding-top: 30px;
+    box-shadow: 0px 10px 20px rgba(0, 0, 0, 0.4);
+    border-radius: 30px;
+    opacity: 1;
+}
+
+#victory-screen.fade-out {
+    opacity: 0;
+    transition: opacity 2s ease;
 }

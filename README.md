@@ -1,1 +1,3 @@
-Implementation of 2048 in javascript.
+# 2048 frontend
+
+Implementation of the game 2048 in plain javascript/html/css.
